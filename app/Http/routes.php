@@ -13,7 +13,7 @@
 Route::group(array('prefix' => 'api'), function()
 {
     Route::post('book/{id}/return/{uid}', 'BookController@returnBook');
-    Route::post('user/{id}/give/{bid}', 'UserController@giveBook');
+    Route::get('user/{id}/free', 'UserController@giveBook');
     Route::get('user/{id}/books', 'UserController@userBooks');
     Route::resource('user', 'UserController');
     Route::resource('book', 'BookController');
@@ -22,7 +22,7 @@ Route::group(array('prefix' => 'api'), function()
 
 
 Route::get('/', function() {
-    return 'Use API';
+    return view('welcome');
 });
 
 

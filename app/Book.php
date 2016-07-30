@@ -25,7 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Book extends Model
 {
-    protected $fillable = ['title', 'author', 'genre', 'year'];
+    protected $fillable = ['title', 'author', 'genre', 'year', 'user_id'];
     protected $guarded = ['id'];
     public function user() {
         return $this->belongsTo(User::class);

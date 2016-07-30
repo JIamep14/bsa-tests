@@ -46,13 +46,14 @@ class BooksSeeder extends Seeder
 {
     public function run()
     {
-         $genres = ['Drama', 'Graphic novel', '(Narrative) Poem/song', 'Myth', 'Novel', 'Novella', 'Short story', 'Monologue', 'Monologue'];
+         $genres = ['Drama', 'Graphic novel', 'Myth', 'Novel', 'Novella', 'Short story', 'Monologue', 'Monologue'];
         $authors = ['William Shakespeare', 'Agatha Christie', 'Barbara Cartland', 'Danielle Steel', 'Harold Robbins', 'Georges Simenon', 'Sidney Sheldon'];
         DB::table('books')->delete();
         for($i = 0;$i < 100;$i ++)
         {
             Book::create([
                 'title'=>'zTitle '. $i,
+                'user_id' => rand(0, 10),
                 'author' => $authors[array_rand($authors)],
                 'genre' => $genres[array_rand($genres)],
                 'year' => rand(1600, 2016)

@@ -24,16 +24,30 @@ class BookController extends Controller
         $statusCode = 200;
         $books = Book::all();
 
-        foreach ($books as $book) {
-
-            $response[] = [
+        for($i = 0;$i < count($books); $i++) {
+            $book = $books[$i];
+            $response[$i] = [
                 'id' => $book->id,
                 'user_id' => $book->user_id,
                 'title' => $book->title,
+                'user' => [
+                    'id' => '',
+                    'firstname' => '',
+                    'lastname' => '',
+                    'email' => ''
+                ],
                 'genre' => $book->genre,
                 'year' => $book->year,
                 'author' => $book->author,
             ];
+            if(!is_null($book->user)) {
+                $response[$i]['user'] = [
+                    'id' => $book->user->id,
+                    'firstname' => $book->user->firstname,
+                    'lastname' => $book->user->lastname,
+                    'email' => $book->user->email
+                ];
+            }
         }
         return Response::json($response, $statusCode);
     }
@@ -66,7 +80,7 @@ class BookController extends Controller
     public function store(Request $request)
     {
         // Добавление новой книги в библиотеку
-        $statusCode = 201;
+        $statusCode = 200;
         $rules = [
             'title' => ['required'],
             'author' => ['required', 'regex:/^[a-zA-Z\s]+$/'],
@@ -117,5 +131,31 @@ class BookController extends Controller
         $book->delete();
 
         return Response::json($response, $responseCode);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $rules = [
+            'title' => ['required'],
+            'author' => ['required', 'regex:/^[a-zA-Z\s]+$/'],
+            'year' => ['required', 'regex: /^[0-9]+$/'],
+            'genre' => ['required', 'regex:/^[a-zA-Z\s]+$/']
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if($validator->fails()) {
+            return Response::json('', 400);
+        } else {
+            $book = Book::find($id);
+            //$book->title = $request->title;
+            //$book->author = $request->author;
+            //$book->genre = $request->genre;
+            //$book->year = $request->year;
+            //$book->save();
+            
+            $book->update($request->all());
+
+            return Response::json('', 200);
+        }
     }
 }
