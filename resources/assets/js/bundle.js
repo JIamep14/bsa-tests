@@ -17692,10 +17692,10 @@ return jQuery;
 }.call(this));
 
 },{}],7:[function(require,module,exports){
-var $ = require('jquery');
-var Backbone = require('backbone');
+$ = require('jquery');
+Backbone = require('backbone');
 Backbone.$ = $;
-var Marionette = require('backbone.marionette');
+Marionette = require('backbone.marionette');
 var init = require('./init.js');
 app = new Marionette.Application();
 
@@ -17704,53 +17704,60 @@ module.exports = app;
 },{"./init.js":10,"backbone":4,"backbone.marionette":2,"jquery":5}],8:[function(require,module,exports){
 var BookModel = require('../models/books/BookModel.js');
 var BookCollection = require('../models/books/BooksCollection.js');
+var BooksView = require('../views/books/BooksView.js');
+var BookView = require('../views/books/BookView.js');
+var EditBookView = require('../views/books/EditBook.js');
+var CreateBookView = require('../views/books/CreateBook.js');
 
+
+var notExists = require('../views/NotExists.js');
 
 module.exports = {
     listBooks: function () {
+        var booksListView;
         var books = this.getBookEntities();
-        var booksListView = new BooksApp.Books({
-            collection: books
-        });
-
+        if (books !== undefined) {
+            booksListView = new BooksView({
+                collection: books
+            });
+        } else {
+            booksListView = new notExists({model: {item: 'Error.'}});
+        }
         app.main.show(booksListView);
     },
     showBook: function (id) {
-        var fetchingBook = app.request('books:entity', id);
-        app.tmps.Controller.showLoading();
+        app.trigger('show:loading');
+
+        var fetchingBook = this.getBookEntity(id);
         $.when(fetchingBook).done(function (book) {
             var bookView;
             if (book !== undefined) {
-                bookView = new BooksApp.ShowBook({
+                bookView = new BookView({
                     model: book
                 });
             }
             else {
-                bookView = new BooksApp.NotExists({});
+                bookView = new notExists({model: {item: 'This book does not exist.'}});
             }
 
             app.getRegion('main').show(bookView);
         });
-        // getUsers: function () {
-        //     app.users = app.request('users:entities');
-        // }
-
     },
 
     editBookView: function (id) {
-        var fetchingBook = app.request('books:entity', id);
-        app.tmps.Controller.showLoading();
+        app.trigger('show:loading');
 
+        var fetchingBook = this.getBookEntity(id);
         $.when(fetchingBook).done(function (book) {
             var bookView;
             if (book !== undefined) {
-                bookView = new BooksApp.EditBook({
+                bookView = new EditBookView({
                     model: book
                 });
 
             }
             else {
-                bookView = new BooksApp.NotExists({});
+                bookView = new notExists({model: {item: 'This book does not exist.'}});
             }
 
             app.getRegion('main').show(bookView);
@@ -17758,20 +17765,15 @@ module.exports = {
     },
 
     createBook: function () {
-        var view = new BooksApp.CreateBook({model: new app.Entities.Book()});
+        var view = new CreateBookView({model: new BookModel()});
         app.getRegion('main').show(view);
     },
     getBookEntities: function () {
 
-        var books = new Entities.BookCollection();
-        books.fetch().then(null, function () {
-            console.log('I can not fetch books =(');
-        });
-        return books;
+        var books = new BookCollection();
+        books.fetch();
 
-        // var books = new Entities.BookCollection();
-        // books.fetch();
-        // return books;
+        return books;
     },
 
     getBookEntity: function (bookId) {
@@ -17788,7 +17790,7 @@ module.exports = {
         return defer.promise();
     }
 };
-},{"../models/books/BookModel.js":11,"../models/books/BooksCollection.js":12}],9:[function(require,module,exports){
+},{"../models/books/BookModel.js":11,"../models/books/BooksCollection.js":12,"../views/NotExists.js":20,"../views/books/BookView.js":22,"../views/books/BooksView.js":23,"../views/books/CreateBook.js":24,"../views/books/EditBook.js":25}],9:[function(require,module,exports){
 var Marionette = require('backbone.marionette');
 app = require('../app.js');
 $ = require('jquery');
@@ -17806,10 +17808,6 @@ var giveBookView = require('../views/users/GiveBookView.js');
 var notExists = require('../views/NotExists.js');
 
 module.exports = {
-    initialize: function () {
-        console.log('Users Controller online');
-    },
-
     listUsers: function () {
         app.trigger('show:loading');
 
@@ -17887,14 +17885,6 @@ module.exports = {
         users.fetch();
         return users;
 
-    //     return users.fetch().then(function () {
-    //         if (users.length === 0) {
-    //             console.log("no initialization");
-    //             users = {id: '', firstname: '', lastname: '', email: ''};
-    //         }
-    //         return $.when(users);
-    //     });
-
     },
     getUserEntity: function (userId) {
         var user = new us({id: userId});
@@ -17910,7 +17900,7 @@ module.exports = {
         return defer.promise();
     }
 };
-},{"../app.js":7,"../models/users/UserAndFreeBooksModel.js":13,"../models/users/UserModel.js":14,"../models/users/UsersCollection.js":15,"../views/NotExists.js":20,"../views/users/CreateUser.js":21,"../views/users/EditUser.js":22,"../views/users/GiveBookView.js":23,"../views/users/UserView.js":25,"../views/users/UsersView.js":26,"backbone.marionette":2,"jquery":5}],10:[function(require,module,exports){
+},{"../app.js":7,"../models/users/UserAndFreeBooksModel.js":13,"../models/users/UserModel.js":14,"../models/users/UsersCollection.js":15,"../views/NotExists.js":20,"../views/users/CreateUser.js":26,"../views/users/EditUser.js":27,"../views/users/GiveBookView.js":28,"../views/users/UserView.js":30,"../views/users/UsersView.js":31,"backbone.marionette":2,"jquery":5}],10:[function(require,module,exports){
 var app = require('./app');
 _ = require('underscore');
 var Backbone = require('backbone');
@@ -17922,46 +17912,56 @@ var Router = require('./routes.js');
 var RouterApi = require('./router_api.js');
 var LoadingView = require('./views/Loading.js');
 
+var BookCollection = require('./models/books/BooksCollection.js');
+var BooksController = require('./controllers/BooksController.js');
+
 app.addRegions({
     main: '#main',
     header: '#header-container'
 });
 
+app.navigate = function (route, options) {
+    options || (options = {});
+    Backbone.history.navigate(route, options);
+};
+
+app.getCurrentRoute = function () {
+    return Backbone.history.fragment
+};
+
 app.on('start', function () {
-    //var Book = new BookModel({id:1});
-    //Backbone.$.when(Book.fetch()).done(function (model) {
-    //    alert(model.title);
-    //});
+
     new Router({
         controller: RouterApi
     });
     app.header.show(new headerView());
-    console.log('App init');
+    console.log('App init at ' + moment().locale('en').format('LLL'));
     Backbone.history.start();
+
+    if (this.getCurrentRoute() === "") {
+        Backbone.history.navigate('user', {
+            trigger: true
+        });
+    }
+
 });
 
 app.on('show:user', function (id) {
     Backbone.history.navigate('user/' + id, {
         trigger: true
     });
-    //app.navigate('user/' + id);
-    //api.showUser(id);
 });
 
 app.on('show:users', function () {
     Backbone.history.navigate('user', {
         trigger: true
     });
-    //app.navigate('user');
-    //api.listUsers();
 });
 
 app.on('edit:user', function (id) {
     Backbone.history.navigate('user/' + id + '/edit', {
         trigger: true
     });
-    //app.navigate('user/' + id + '/edit');
-    //api.editUser(id);
 });
 
 app.on('show:books', function () {
@@ -18004,26 +18004,10 @@ app.on('show:loading', function () {
     app.main.show(new LoadingView());
 });
 
-app.reqres.setHandler("books:entities", function () {
-    return BooksModels.bookAPI.getBookEntities();
-});
-
-app.reqres.setHandler('books:entity', function (id) {
-    return BooksModels.bookAPI.getBookEntity(id);
-});
-
-app.reqres.setHandler("users:entities", function () {
-    return UsersController.getUserEntities();
-});
-
-app.reqres.setHandler('users:entity', function (id) {
-    return UsersController.getUserEntity(id);
-});
-
 app.start();
 
-},{"./app":7,"./controllers/UsersController.js":9,"./models/books/BookModel.js":11,"./models/users/UserModel.js":14,"./router_api.js":16,"./routes.js":17,"./views/Header.js":18,"./views/Loading.js":19,"backbone":4,"underscore":6}],11:[function(require,module,exports){
-var Backbone  = require('backbone');
+},{"./app":7,"./controllers/BooksController.js":8,"./controllers/UsersController.js":9,"./models/books/BookModel.js":11,"./models/books/BooksCollection.js":12,"./models/users/UserModel.js":14,"./router_api.js":16,"./routes.js":17,"./views/Header.js":18,"./views/Loading.js":19,"backbone":4,"underscore":6}],11:[function(require,module,exports){
+var Backbone = require('backbone');
 
 module.exports = Backbone.Model.extend({
     urlRoot: 'api/book',
@@ -18065,8 +18049,9 @@ module.exports = Backbone.Model.extend({
     }
 });
 },{"backbone":4}],12:[function(require,module,exports){
-var Backbone  = require('backbone');
+var Backbone = require('backbone');
 var BookModel = require('./BookModel.js');
+
 module.exports = Backbone.Collection.extend({
     model: BookModel,
     url: 'api/book'
@@ -18080,7 +18065,7 @@ module.exports = Backbone.Model.extend({
     }
 });
 },{"backbone":4}],14:[function(require,module,exports){
-var Backbone  = require('backbone');
+var Backbone = require('backbone');
 
 module.exports = Backbone.Model.extend({
     urlRoot: 'api/user',
@@ -18093,8 +18078,8 @@ module.exports = Backbone.Model.extend({
             id: '',
             title: '',
             author: '',
-            genre:'',
-            year:''
+            genre: '',
+            year: ''
         }
     },
     validate: function (attrs, options) {
@@ -18103,16 +18088,14 @@ module.exports = Backbone.Model.extend({
             errors.firstname = 'First Name params: Min 3 characters, only letters, required';
         }
 
-        if (!attrs.lastname || !attrs.lastname.match(/^[a-zA-Z]+$/) || attrs.lastname.length < 3)
-        {
+        if (!attrs.lastname || !attrs.lastname.match(/^[a-zA-Z]+$/) || attrs.lastname.length < 3) {
             errors.lastname = 'Last Name params: Min 3 characters, only letters, required';
         }
 
-        if (!attrs.email || !attrs.email.match(/^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i))
-        {
+        if (!attrs.email || !attrs.email.match(/^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i)) {
             errors.email = 'Email is invalid';
         }
-        if(!_.isEmpty(errors)) {
+        if (!_.isEmpty(errors)) {
             return errors;
         }
     }
@@ -18127,6 +18110,7 @@ module.exports = Backbone.Collection.extend({
 });
 },{"./UserModel.js":14,"backbone":4}],16:[function(require,module,exports){
 var UsersController = require('./controllers/UsersController.js');
+var BooksController = require('./controllers/BooksController.js');
 
 module.exports = {
     listUsers: function () {
@@ -18142,22 +18126,22 @@ module.exports = {
         UsersController.createUser();
     },
     listBooks: function () {
-        app.BooksApp.Controller.listBooks();
+        BooksController.listBooks();
     },
     showBook: function (id) {
-        app.BooksApp.Controller.showBook(id);
+        BooksController.showBook(id);
     },
     editBook: function (id) {
-        app.BooksApp.Controller.editBookView(id);
+        BooksController.editBookView(id);
     },
     createBook: function () {
-        app.BooksApp.Controller.createBook();
+        BooksController.createBook();
     },
     giveBook: function (id) {
         UsersController.giveBook(id);
     }
 };
-},{"./controllers/UsersController.js":9}],17:[function(require,module,exports){
+},{"./controllers/BooksController.js":8,"./controllers/UsersController.js":9}],17:[function(require,module,exports){
 app = require('./app.js');
 var Marionette = require('backbone.marionette');
 
@@ -18165,7 +18149,7 @@ var Marionette = require('backbone.marionette');
 module.exports = Marionette.AppRouter.extend({
     appRoutes: {
         "user": "listUsers",
-        'user/create':'createUser',
+        'user/create': 'createUser',
         'user/:id': 'showUser',
         'user/:id/edit': 'editUser',
         'user/:id/give': 'giveBook',
@@ -18185,31 +18169,39 @@ app = require('../app.js');
 
 
 module.exports = Marionette.ItemView.extend({
-    //template: '#header-template',
     template: window['JST']['header.tpl'],
-    //template: _.template(JST["resources/assets/js/app/templates/header.tpl"]).html(),
     tagName: 'nav',
     id: 'header',
     className: 'navbar navbar-inverse',
+    onShow: function () {
+        this.setDate();
+    },
     ui: {
         showUsers: '.js-view-users',
         createusers: '.js-create-user',
         showBooks: '.js-view-books',
-        createBook: '.js-create-book'
+        createBook: '.js-create-book',
+        date: '.js-date'
     },
     events: {
         'click @ui.showUsers': function () {
+            this.setDate();
             app.trigger('show:users');
         },
         'click @ui.createusers': function () {
+            this.setDate();
             app.trigger('create:users');
         },
         'click @ui.showBooks': function () {
+            this.setDate();
             app.trigger('show:books');
         },
         'click @ui.createBook': function () {
+            this.setDate();
             app.trigger('create:books');
         }
+    }, setDate: function () {
+        this.ui.date.text(moment().format('LLL'));
     }
 });
 },{"../app.js":7,"backbone.marionette":2,"jquery":5,"underscore":6}],19:[function(require,module,exports){
@@ -18227,12 +18219,189 @@ module.exports = Marionette.ItemView.extend({
     template: window['JST']['not_exists.tpl']
 });
 },{"backbone.marionette":2,"underscore":6}],21:[function(require,module,exports){
+var Marionette = require('backbone.marionette');
+
+module.exports = Marionette.ItemView.extend({
+    tagName: 'tr',
+    template: window['JST']['book_tr.tpl'],
+
+    ui: {
+        show: '.js-show',
+        edit: '.js-edit',
+        delete: '.js-delete',
+        show_user: '.js-show-user',
+        return: '.js-return-book'
+    },
+
+    events: {
+        'click @ui.show': 'showClicked',
+        'click @ui.edit': 'editClicked',
+        'click @ui.delete': "deleteClicked",
+        'click @ui.show_user': 'showUser',
+        'click @ui.return': function () {
+            app.trigger('show:book', this.model.get('id'));
+        }
+    },
+
+    showClicked: function (e) {
+        app.trigger('show:book', this.model.get('id'));
+    },
+    editClicked: function (e) {
+        app.trigger('edit:book', this.model.get('id'));
+    },
+    deleteClicked: function (e) {
+        this.model.destroy();
+    },
+
+    showUser: function () {
+        app.trigger('show:user', this.model.get('user_id'));
+    },
+
+    remove: function () {
+        this.$el.fadeOut();
+    }
+
+});
+},{"backbone.marionette":2}],22:[function(require,module,exports){
+var Marionette = require('backbone.marionette');
+
+module.exports = Marionette.ItemView.extend({
+    template: window['JST']['show_book_template.tpl'],
+    ui: {
+        edit: '.js-edit',
+        return: '.js-return'
+    },
+    events: {
+        'click @ui.edit': function () {
+            app.trigger('edit:book', this.model.get('id'));
+        },
+        'click @ui.return': function (e) {
+            var self = this;
+            this.model.save({user_id: 0}, {validate: false}, {
+                success: function () {
+                    app.trigger('show:book', self.model.get('id'));
+                },
+                error: function () {
+                    alert('Some server error. Try later.');
+                }
+            });
+        }
+    },
+    modelEvents: {
+        'change': 'render'
+    }
+});
+},{"backbone.marionette":2}],23:[function(require,module,exports){
+var Marionette = require('backbone.marionette');
+var BookRowView = require('./BookRowView.js');
+
+module.exports = Marionette.CompositeView.extend({
+    tagName: "table",
+    className: "table table-striped table-hover table-bordered",
+    template: window['JST']['books_table_template.tpl'],
+    childView: BookRowView,
+    itemViewContainer: "tbody"
+});
+},{"./BookRowView.js":21,"backbone.marionette":2}],24:[function(require,module,exports){
+var EditBookView = require('./EditBook.js');
+var BookModel = require('../../models/books/BookModel.js');
+
+module.exports = EditBookView.extend({
+    events: {
+        'click @ui.save': function (e) {
+            var book = new BookModel();
+            var self = this;
+            self.ui.messages.empty();
+            self.ui.messages.removeClass();
+            e.preventDefault();
+            var title = this.ui.form.find("input[name='title']").val();
+            var author = this.ui.form.find("input[name='author']").val();
+            var genre = this.ui.form.find("input[name='genre']").val();
+            var year = this.ui.form.find("input[name='year']").val();
+            book.unset('id');
+            if (book.save({
+                    title: title,
+                    author: author,
+                    genre: genre,
+                    year: year
+                }, {
+                    success: function (model, response, options) {
+                        self.ui.messages.addClass('alert alert-dismissible alert-success');
+                        self.ui.messages.append('Success');
+                        app.trigger('show:book', model.get('id'));
+                    },
+                    error: function () {
+                        self.ui.messages.addClass('alert alert-dismissible alert-warning');
+                        self.ui.messages.append('Error');
+                    }
+                })) {
+            } else {
+                self.ui.messages.append('<ul>');
+                $.each(book.validationError, function (key, value) {
+                    self.ui.messages.find('ul').append('<li>' + value + '</li>');
+                })
+            }
+        }
+    }
+});
+},{"../../models/books/BookModel.js":11,"./EditBook.js":25}],25:[function(require,module,exports){
+var Marionette = require('backbone.marionette');
+
+module.exports = Marionette.ItemView.extend({
+    template: window['JST']['edit_book_template.tpl'],
+    ui: {
+        save: '.js-save',
+        messages: '#messages2',
+        form: 'form'
+    },
+    modelEvents: {
+        'change': 'render'
+    },
+    events: {
+        'click @ui.save': function (e) {
+            var self = this;
+            self.ui.messages.empty();
+            self.ui.messages.removeClass();
+            e.preventDefault();
+            var id = this.ui.form.find("input[name='id']").val();
+            var title = this.ui.form.find("input[name='title']").val();
+            var author = this.ui.form.find("input[name='author']").val();
+            var genre = this.ui.form.find("input[name='genre']").val();
+            var year = this.ui.form.find("input[name='year']").val();
+
+            if (this.model.save({
+                    id: id,
+                    title: title,
+                    author: author,
+                    genre: genre,
+                    year: year
+                }, {
+                    success: function (model, response, options) {
+                        self.ui.messages.addClass('alert alert-dismissible alert-success');
+                        self.ui.messages.append('Success');
+                        app.trigger('show:book', self.model.get('id'));
+                    },
+                    error: function () {
+                        self.ui.messages.addClass('alert alert-dismissible alert-warning');
+                        self.ui.messages.append('Error');
+                    }
+                })) {
+            } else {
+                self.ui.messages.append('<ul>');
+                $.each(this.model.validationError, function (key, value) {
+                    self.ui.messages.find('ul').append('<li>' + value + '</li>');
+                })
+            }
+        }
+    }
+});
+},{"backbone.marionette":2}],26:[function(require,module,exports){
 var EditUserView = require('./EditUser.js');
 var UserModel = require('../../models/users/UserModel.js');
 
 module.exports = EditUserView.extend({
     events: {
-        'click @ui.save' : function (e) {
+        'click @ui.save': function (e) {
             var self = this;
             self.ui.messages.empty();
             self.ui.messages.removeClass();
@@ -18266,7 +18435,7 @@ module.exports = EditUserView.extend({
         }
     }
 });
-},{"../../models/users/UserModel.js":14,"./EditUser.js":22}],22:[function(require,module,exports){
+},{"../../models/users/UserModel.js":14,"./EditUser.js":27}],27:[function(require,module,exports){
 var Marionette = require('backbone.marionette');
 
 module.exports = Marionette.ItemView.extend({
@@ -18315,7 +18484,7 @@ module.exports = Marionette.ItemView.extend({
         }
     }
 });
-},{"backbone.marionette":2}],23:[function(require,module,exports){
+},{"backbone.marionette":2}],28:[function(require,module,exports){
 var Marionette = require('backbone.marionette');
 var BooksController = require('../../controllers/BooksController.js');
 module.exports = Marionette.ItemView.extend({
@@ -18330,7 +18499,7 @@ module.exports = Marionette.ItemView.extend({
             var user_id = self.model.get('id');
             e.preventDefault();
             var book_id = this.ui.select.val();
-            if(book_id == 0) alert('Choose book');
+            if (book_id == 0) alert('Choose book');
             else {
                 var fetchingBook = BooksController.getBookEntity(book_id);
                 $.when(fetchingBook).done(function (book) {
@@ -18342,7 +18511,7 @@ module.exports = Marionette.ItemView.extend({
         }
     }
 });
-},{"../../controllers/BooksController.js":8,"backbone.marionette":2}],24:[function(require,module,exports){
+},{"../../controllers/BooksController.js":8,"backbone.marionette":2}],29:[function(require,module,exports){
 var Marionette = require('backbone.marionette');
 
 module.exports = Marionette.ItemView.extend({
@@ -18381,7 +18550,7 @@ module.exports = Marionette.ItemView.extend({
     }
 
 });
-},{"backbone.marionette":2}],25:[function(require,module,exports){
+},{"backbone.marionette":2}],30:[function(require,module,exports){
 var Marionette = require('backbone.marionette');
 
 module.exports = Marionette.ItemView.extend({
@@ -18402,7 +18571,7 @@ module.exports = Marionette.ItemView.extend({
         }
     }
 });
-},{"backbone.marionette":2}],26:[function(require,module,exports){
+},{"backbone.marionette":2}],31:[function(require,module,exports){
 var Marionette = require('backbone.marionette');
 var _ = require('underscore');
 var UserRowView = require('../../views/users/UserRowView.js');
@@ -18415,4 +18584,4 @@ module.exports = Marionette.CompositeView.extend({
     childView: UserRowView,
     itemViewContainer: "tbody"
 });
-},{"../../views/users/UserRowView.js":24,"backbone.marionette":2,"underscore":6}]},{},[10]);
+},{"../../views/users/UserRowView.js":29,"backbone.marionette":2,"underscore":6}]},{},[10]);

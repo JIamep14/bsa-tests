@@ -5,30 +5,38 @@ app = require('../app.js');
 
 
 module.exports = Marionette.ItemView.extend({
-    //template: '#header-template',
     template: window['JST']['header.tpl'],
-    //template: _.template(JST["resources/assets/js/app/templates/header.tpl"]).html(),
     tagName: 'nav',
     id: 'header',
     className: 'navbar navbar-inverse',
+    onShow: function () {
+        this.setDate();
+    },
     ui: {
         showUsers: '.js-view-users',
         createusers: '.js-create-user',
         showBooks: '.js-view-books',
-        createBook: '.js-create-book'
+        createBook: '.js-create-book',
+        date: '.js-date'
     },
     events: {
         'click @ui.showUsers': function () {
+            this.setDate();
             app.trigger('show:users');
         },
         'click @ui.createusers': function () {
+            this.setDate();
             app.trigger('create:users');
         },
         'click @ui.showBooks': function () {
+            this.setDate();
             app.trigger('show:books');
         },
         'click @ui.createBook': function () {
+            this.setDate();
             app.trigger('create:books');
         }
+    }, setDate: function () {
+        this.ui.date.text(moment().format('LLL'));
     }
 });

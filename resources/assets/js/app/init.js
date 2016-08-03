@@ -9,46 +9,56 @@ var Router = require('./routes.js');
 var RouterApi = require('./router_api.js');
 var LoadingView = require('./views/Loading.js');
 
+var BookCollection = require('./models/books/BooksCollection.js');
+var BooksController = require('./controllers/BooksController.js');
+
 app.addRegions({
     main: '#main',
     header: '#header-container'
 });
 
+app.navigate = function (route, options) {
+    options || (options = {});
+    Backbone.history.navigate(route, options);
+};
+
+app.getCurrentRoute = function () {
+    return Backbone.history.fragment
+};
+
 app.on('start', function () {
-    //var Book = new BookModel({id:1});
-    //Backbone.$.when(Book.fetch()).done(function (model) {
-    //    alert(model.title);
-    //});
+
     new Router({
         controller: RouterApi
     });
     app.header.show(new headerView());
-    console.log('App init');
+    console.log('App init at ' + moment().locale('en').format('LLL'));
     Backbone.history.start();
+
+    if (this.getCurrentRoute() === "") {
+        Backbone.history.navigate('user', {
+            trigger: true
+        });
+    }
+
 });
 
 app.on('show:user', function (id) {
     Backbone.history.navigate('user/' + id, {
         trigger: true
     });
-    //app.navigate('user/' + id);
-    //api.showUser(id);
 });
 
 app.on('show:users', function () {
     Backbone.history.navigate('user', {
         trigger: true
     });
-    //app.navigate('user');
-    //api.listUsers();
 });
 
 app.on('edit:user', function (id) {
     Backbone.history.navigate('user/' + id + '/edit', {
         trigger: true
     });
-    //app.navigate('user/' + id + '/edit');
-    //api.editUser(id);
 });
 
 app.on('show:books', function () {
@@ -89,22 +99,6 @@ app.on('give:book', function (id) {
 
 app.on('show:loading', function () {
     app.main.show(new LoadingView());
-});
-
-app.reqres.setHandler("books:entities", function () {
-    return BooksModels.bookAPI.getBookEntities();
-});
-
-app.reqres.setHandler('books:entity', function (id) {
-    return BooksModels.bookAPI.getBookEntity(id);
-});
-
-app.reqres.setHandler("users:entities", function () {
-    return UsersController.getUserEntities();
-});
-
-app.reqres.setHandler('users:entity', function (id) {
-    return UsersController.getUserEntity(id);
 });
 
 app.start();

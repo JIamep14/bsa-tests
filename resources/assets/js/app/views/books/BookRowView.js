@@ -1,6 +1,8 @@
+var Marionette = require('backbone.marionette');
+
 module.exports = Marionette.ItemView.extend({
     tagName: 'tr',
-    template: '#book-tr',
+    template: window['JST']['book_tr.tpl'],
 
     ui: {
         show: '.js-show',

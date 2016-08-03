@@ -1,9 +1,10 @@
+var EditBookView = require('./EditBook.js');
+var BookModel = require('../../models/books/BookModel.js');
 
-
-module.exports = BooksApp.EditBook.extend({
+module.exports = EditBookView.extend({
     events: {
         'click @ui.save': function (e) {
-            var book = new app.Entities.Book();
+            var book = new BookModel();
             var self = this;
             self.ui.messages.empty();
             self.ui.messages.removeClass();

@@ -5,7 +5,7 @@ var Marionette = require('backbone.marionette');
 module.exports = Marionette.AppRouter.extend({
     appRoutes: {
         "user": "listUsers",
-        'user/create':'createUser',
+        'user/create': 'createUser',
         'user/:id': 'showUser',
         'user/:id/edit': 'editUser',
         'user/:id/give': 'giveBook',

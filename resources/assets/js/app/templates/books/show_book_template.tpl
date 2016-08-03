@@ -16,4 +16,5 @@
     <input class="form-control" readonly="readonly" name="year" type="text" value="<%- year %>">
 </div>
 <button class="btn btn-primary js-edit">Edit</button>
-<% if(user_id != 0)  { %><button class="btn btn-primary js-return">Return book</button> <% } %>
+<% if(user_id != 0)  { %>
+<button class="btn btn-primary js-return">Return book</button> <% } %>

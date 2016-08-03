@@ -1,5 +1,7 @@
+var Marionette = require('backbone.marionette');
+
 module.exports = Marionette.ItemView.extend({
-    template: '#book-view',
+    template: window['JST']['show_book_template.tpl'],
     ui: {
         edit: '.js-edit',
         return: '.js-return'
@@ -10,7 +12,7 @@ module.exports = Marionette.ItemView.extend({
         },
         'click @ui.return': function (e) {
             var self = this;
-            this.model.save({ user_id: 0}, {validate: false}, {
+            this.model.save({user_id: 0}, {validate: false}, {
                 success: function () {
                     app.trigger('show:book', self.model.get('id'));
                 },

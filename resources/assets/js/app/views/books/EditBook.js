@@ -1,5 +1,7 @@
+var Marionette = require('backbone.marionette');
+
 module.exports = Marionette.ItemView.extend({
-    template: '#edit-book-template',
+    template: window['JST']['edit_book_template.tpl'],
     ui: {
         save: '.js-save',
         messages: '#messages2',

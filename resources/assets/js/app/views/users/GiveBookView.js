@@ -12,7 +12,7 @@ module.exports = Marionette.ItemView.extend({
             var user_id = self.model.get('id');
             e.preventDefault();
             var book_id = this.ui.select.val();
-            if(book_id == 0) alert('Choose book');
+            if (book_id == 0) alert('Choose book');
             else {
                 var fetchingBook = BooksController.getBookEntity(book_id);
                 $.when(fetchingBook).done(function (book) {

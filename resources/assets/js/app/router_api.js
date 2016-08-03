@@ -1,4 +1,5 @@
 var UsersController = require('./controllers/UsersController.js');
+var BooksController = require('./controllers/BooksController.js');
 
 module.exports = {
     listUsers: function () {
@@ -14,16 +15,16 @@ module.exports = {
         UsersController.createUser();
     },
     listBooks: function () {
-        app.BooksApp.Controller.listBooks();
+        BooksController.listBooks();
     },
     showBook: function (id) {
-        app.BooksApp.Controller.showBook(id);
+        BooksController.showBook(id);
     },
     editBook: function (id) {
-        app.BooksApp.Controller.editBookView(id);
+        BooksController.editBookView(id);
     },
     createBook: function () {
-        app.BooksApp.Controller.createBook();
+        BooksController.createBook();
     },
     giveBook: function (id) {
         UsersController.giveBook(id);

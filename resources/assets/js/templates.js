@@ -5,24 +5,24 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<script type="text/html" id="asdasdasd">\r\n    <td>' +
+__p += '<td>' +
 __e( title ) +
-'</td>\r\n    <td>' +
+'</td>\r\n<td>' +
 __e( author ) +
-'</td>\r\n    <td>' +
+'</td>\r\n<td>' +
 __e( genre ) +
-'</td>\r\n    <td>' +
+'</td>\r\n<td>' +
 __e( year ) +
-'</td>\r\n    <td> ';
+'</td>\r\n<td> ';
  if(user.firstname) { ;
 __p += ' <a class="btn btn-primary btn-xs js-show-user">' +
 __e( user.firstname ) +
 ' ' +
 __e(
-            user.lastname ) +
+        user.lastname ) +
 ' <a style="cursor:pointer;" class="btn btn-primary btn-xs js-return-book">Return</a> ';
  } ;
-__p += '</a>\r\n    </td>\r\n    <td>\r\n        <button class="btn btn-small btn-success js-show">Show</button>\r\n        <button class="btn btn-small btn-warning js-edit">Edit</button>\r\n\r\n        <button class="btn btn-small btn-danger pull-right js-delete">Delete</button>\r\n    </td>\r\n</script>';
+__p += '</a>\r\n</td>\r\n<td>\r\n    <button class="btn btn-small btn-success js-show">Show</button>\r\n    <button class="btn btn-small btn-warning js-edit">Edit</button>\r\n\r\n    <button class="btn btn-small btn-danger pull-right js-delete">Delete</button>\r\n</td>\r\n';
 
 }
 return __p
@@ -120,7 +120,7 @@ this["JST"]["header.tpl"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '\r\n<ul class="nav navbar-nav">\r\n    <li><a style="cursor: pointer;" class="js-view-users">View all users</a></li>\r\n    <li><a style="cursor: pointer;" class="js-create-user">Add new user</a></li>\r\n    <li><a style="cursor: pointer;" class="js-view-books">View all books</a></li>\r\n    <li><a style="cursor: pointer;" class="js-create-book">Add new book</a></li>\r\n</ul>';
+__p += '\r\n<ul class="nav navbar-nav">\r\n    <li><a style="cursor: pointer;" class="js-view-users">View all users</a></li>\r\n    <li><a style="cursor: pointer;" class="js-create-user">Add new user</a></li>\r\n    <li><a style="cursor: pointer;" class="js-view-books">View all books</a></li>\r\n    <li><a style="cursor: pointer;" class="js-create-book">Add new book</a></li>\r\n    <li><a class="js-date"></a></li>\r\n</ul>';
 
 }
 return __p

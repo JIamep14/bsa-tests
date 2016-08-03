@@ -15,10 +15,6 @@ var giveBookView = require('../views/users/GiveBookView.js');
 var notExists = require('../views/NotExists.js');
 
 module.exports = {
-    initialize: function () {
-        console.log('Users Controller online');
-    },
-
     listUsers: function () {
         app.trigger('show:loading');
 
@@ -95,14 +91,6 @@ module.exports = {
         var users = new usCollection();
         users.fetch();
         return users;
-
-    //     return users.fetch().then(function () {
-    //         if (users.length === 0) {
-    //             console.log("no initialization");
-    //             users = {id: '', firstname: '', lastname: '', email: ''};
-    //         }
-    //         return $.when(users);
-    //     });
 
     },
     getUserEntity: function (userId) {

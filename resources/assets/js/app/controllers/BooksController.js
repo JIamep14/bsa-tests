@@ -1,52 +1,59 @@
 var BookModel = require('../models/books/BookModel.js');
 var BookCollection = require('../models/books/BooksCollection.js');
+var BooksView = require('../views/books/BooksView.js');
+var BookView = require('../views/books/BookView.js');
+var EditBookView = require('../views/books/EditBook.js');
+var CreateBookView = require('../views/books/CreateBook.js');
 
+
+var notExists = require('../views/NotExists.js');
 
 module.exports = {
     listBooks: function () {
+        var booksListView;
         var books = this.getBookEntities();
-        var booksListView = new BooksApp.Books({
-            collection: books
-        });
-
+        if (books !== undefined) {
+            booksListView = new BooksView({
+                collection: books
+            });
+        } else {
+            booksListView = new notExists({model: {item: 'Error.'}});
+        }
         app.main.show(booksListView);
     },
     showBook: function (id) {
-        var fetchingBook = app.request('books:entity', id);
-        app.tmps.Controller.showLoading();
+        app.trigger('show:loading');
+
+        var fetchingBook = this.getBookEntity(id);
         $.when(fetchingBook).done(function (book) {
             var bookView;
             if (book !== undefined) {
-                bookView = new BooksApp.ShowBook({
+                bookView = new BookView({
                     model: book
                 });
             }
             else {
-                bookView = new BooksApp.NotExists({});
+                bookView = new notExists({model: {item: 'This book does not exist.'}});
             }
 
             app.getRegion('main').show(bookView);
         });
-        // getUsers: function () {
-        //     app.users = app.request('users:entities');
-        // }
-
     },
 
     editBookView: function (id) {
-        var fetchingBook = app.request('books:entity', id);
-        app.tmps.Controller.showLoading();
+        app.trigger('show:loading');
 
+        var fetchingBook = this.getBookEntity(id);
         $.when(fetchingBook).done(function (book) {
             var bookView;
             if (book !== undefined) {
-                bookView = new BooksApp.EditBook({
+                bookView = new EditBookView({
                     model: book
                 });
 
             }
             else {
-                bookView = new BooksApp.NotExists({});
+                bookView = new notExists({model: {item: 'This book does not exist.'}});
             }
 
             app.getRegion('main').show(bookView);
@@ -54,20 +61,15 @@ module.exports = {
     },
 
     createBook: function () {
-        var view = new BooksApp.CreateBook({model: new app.Entities.Book()});
+        var view = new CreateBookView({model: new BookModel()});
         app.getRegion('main').show(view);
     },
     getBookEntities: function () {
 
-        var books = new Entities.BookCollection();
-        books.fetch().then(null, function () {
-            console.log('I can not fetch books =(');
-        });
-        return books;
+        var books = new BookCollection();
+        books.fetch();
 
-        // var books = new Entities.BookCollection();
-        // books.fetch();
-        // return books;
+        return books;
     },
 
     getBookEntity: function (bookId) {

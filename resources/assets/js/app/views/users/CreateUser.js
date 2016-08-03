@@ -3,7 +3,7 @@ var UserModel = require('../../models/users/UserModel.js');
 
 module.exports = EditUserView.extend({
     events: {
-        'click @ui.save' : function (e) {
+        'click @ui.save': function (e) {
             var self = this;
             self.ui.messages.empty();
             self.ui.messages.removeClass();

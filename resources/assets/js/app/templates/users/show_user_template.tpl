@@ -19,7 +19,8 @@
     </thead>
     <tbody>
     <% _.each(books, function(book, key) { %>
-    <tr><td><%- book.title %> - <%- book.author %> - <%- book.genre %> - <%- book.year %></td>
+    <tr>
+        <td><%- book.title %> - <%- book.author %> - <%- book.genre %> - <%- book.year %></td>
 
     </tr>
     <% }); %>
