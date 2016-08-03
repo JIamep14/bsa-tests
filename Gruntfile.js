@@ -22,6 +22,10 @@ module.exports = function (grunt) {
             css: {
                 files: 'resources/assets/css/**/*.css',
                 tasks: 'concat:dev'
+            },
+            templates: {
+                files: 'resources/assets/js/app/templates/**/*.css',
+                tasks: 'jst:dev'
             }
         },
         jst: {
