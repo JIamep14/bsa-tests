@@ -17,7 +17,7 @@ module.exports = {
                 collection: books
             });
         } else {
-            booksListView = new notExists({model: {item: 'Error.'}});
+            booksListView = new notExists({model: new Backbone.Model({item: 'Can not fetch data from server'})});
         }
         app.main.show(booksListView);
     },
@@ -33,7 +33,7 @@ module.exports = {
                 });
             }
             else {
-                bookView = new notExists({model: {item: 'This book does not exist.'}});
+                bookView = new notExists({model: new Backbone.Model({item: 'This book does not exist.'})});
             }
 
             app.getRegion('main').show(bookView);
@@ -53,7 +53,7 @@ module.exports = {
 
             }
             else {
-                bookView = new notExists({model: {item: 'This book does not exist.'}});
+                bookView = new notExists({model: new Backbone.Model({item: 'This book does not exist.'})});
             }
 
             app.getRegion('main').show(bookView);

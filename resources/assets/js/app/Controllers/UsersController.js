@@ -25,7 +25,7 @@ module.exports = {
                 collection: users
             });
         } else {
-            usersListView = new notExists({model: {item: 'Error.'}});
+            usersListView = new notExists({model: new Backbone.Model({item: 'Can not fetch data from server'})});
         }
         app.main.show(usersListView);
     },
@@ -42,7 +42,7 @@ module.exports = {
                 });
             }
             else {
-                userView = new notExists({model: {item: 'This user does not exist.'}});
+                userView = new notExists({model: new Backbone.Model({item: 'This user does not exist'})});
             }
             app.getRegion('main').show(userView);
         });
@@ -62,7 +62,7 @@ module.exports = {
 
             }
             else {
-                userView = new notExists({item: 'user'});
+                userView = new notExists({model: new Backbone.Model({item: 'This user does not exist.'})});
             }
 
             app.getRegion('main').show(userView);
