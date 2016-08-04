@@ -157,7 +157,7 @@ class BookController extends Controller
 
             if($request->input('attached') == 1) {
                 $book->attachcode = rand(1, 25000);
-                $this->dispatch((new remindTakenBook($book))->delay(30));
+                $this->dispatch((new remindTakenBook($book))->delay(2592000));
             } else if($request->input('attached') == 0) {
                 $book->attachcode = '0';
             }
