@@ -11,14 +11,11 @@ module.exports = Marionette.ItemView.extend({
             app.trigger('edit:book', this.model.get('id'));
         },
         'click @ui.return': function (e) {
-            var self = this;
-            this.model.save({user_id: 0}, {validate: false}, {
-                success: function () {
-                    app.trigger('show:book', self.model.get('id'));
-                },
-                error: function () {
-                    alert('Some server error. Try later.');
-                }
+            var book_id = this.model.get('id');
+            this.model.save({user_id: 0, attached: 0}, {validate: false}).then(function(){
+                app.trigger('show:book', book_id);
+            } ,function() {
+                alert('Some server error. Try later.');
             });
         }
     },

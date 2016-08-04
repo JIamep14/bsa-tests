@@ -8,6 +8,7 @@ module.exports = Backbone.Model.extend({
         author: '',
         genre: '',
         year: '',
+        attached: '',
         user: {
             id: '',
             firstname: '',

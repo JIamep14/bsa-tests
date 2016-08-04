@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Book;
 use App\Exceptions\MyException;
+use App\Jobs\NewBookNotification;
+use App\Jobs\remindTakenBook;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 use App\Http\Requests;
 use App\User;
@@ -96,6 +100,7 @@ class BookController extends Controller
             $book = new Book($request->all());
             $book->save();
 
+            $this->dispatch((new NewBookNotification($book)));
             return Response::json($book, $statusCode);
         }
     }
@@ -144,17 +149,20 @@ class BookController extends Controller
 
         $validator = Validator::make($request->all(), $rules);
         if($validator->fails()) {
-            return Response::json('', 400);
+            return Response::json('', 460);
         } else {
             $book = Book::find($id);
-            //$book->title = $request->title;
-            //$book->author = $request->author;
-            //$book->genre = $request->genre;
-            //$book->year = $request->year;
-            //$book->save();
-            
+
             $book->update($request->all());
 
+            if($request->input('attached') == 1) {
+                $book->attachcode = rand(1, 25000);
+                $this->dispatch((new remindTakenBook($book))->delay(30));
+            } else if($request->input('attached') == 0) {
+                $book->attachcode = '0';
+            }
+
+            $book->save();
             return Response::json('', 200);
         }
     }
