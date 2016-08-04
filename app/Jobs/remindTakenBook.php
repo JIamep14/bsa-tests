@@ -37,6 +37,7 @@ class remindTakenBook extends Job implements ShouldQueue
     public function handle(Mailer $mailer)
     {
         // я не знал, как найти и удалить job, если пользователь вернул книгу и оповещать не нужно, поэтому сочинил такую проверку
+        // все таки я должен был сделать отдельную таблицу для отношений user<->book, если бы так сделал, то можно было бы передавать в job user<->book или ее id и потом проверять, существует ли она.
         if($this->book->user_id != 0 &&
             $this->book->user_id == $this->user_id &&
             $this->book->attachcode == $this->attachcode) {
