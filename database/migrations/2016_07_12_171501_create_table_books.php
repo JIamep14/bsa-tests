@@ -14,12 +14,12 @@ class CreateTableBooks extends Migration
     {
         Schema::create('books', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id')->index();
+            $table->integer('user_id')->index()->default(0);
             $table->string('title');
             $table->string('author');
             $table->integer('year');
             $table->string('genre');
-            $table->string('attachcode');
+            $table->string('attachcode')->default(0);
             $table->timestamps();
         });
     }

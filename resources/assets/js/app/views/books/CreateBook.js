@@ -19,17 +19,16 @@ module.exports = EditBookView.extend({
                     author: author,
                     genre: genre,
                     year: year
-                }, {
-                    success: function (model, response, options) {
+                }, {validate: false}).then(
+                    function () {
                         self.ui.messages.addClass('alert alert-dismissible alert-success');
                         self.ui.messages.append('Success');
-                        app.trigger('show:book', model.get('id'));
-                    },
-                    error: function () {
+                        app.trigger('show:book', book.get('id'));
+                    }, function () {
                         self.ui.messages.addClass('alert alert-dismissible alert-warning');
                         self.ui.messages.append('Error');
                     }
-                })) {
+                )) {
             } else {
                 self.ui.messages.append('<ul>');
                 $.each(book.validationError, function (key, value) {

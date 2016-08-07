@@ -41,7 +41,9 @@ module.exports = function (grunt) {
                 }
             },
             prod: {
-                'resources/assets/js/templates.js': ['resources/assets/js/app/templates/**/*.tpl']
+                files: {
+                    'resources/assets/js/templates.js': ['resources/assets/js/app/templates/**/*.tpl']
+                }
             }
         },
         concat: {

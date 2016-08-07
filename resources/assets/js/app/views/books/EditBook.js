@@ -28,17 +28,17 @@ module.exports = Marionette.ItemView.extend({
                     author: author,
                     genre: genre,
                     year: year
-                }, {
-                    success: function (model, response, options) {
+                }, {validate: false}).then(
+                    function() {
+
                         self.ui.messages.addClass('alert alert-dismissible alert-success');
                         self.ui.messages.append('Success');
-                        app.trigger('show:book', self.model.get('id'));
-                    },
-                    error: function () {
+                        app.trigger('show:book', model.get('id'));
+                    }, function () {
                         self.ui.messages.addClass('alert alert-dismissible alert-warning');
                         self.ui.messages.append('Error');
                     }
-                })) {
+                )){
             } else {
                 self.ui.messages.append('<ul>');
                 $.each(this.model.validationError, function (key, value) {

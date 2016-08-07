@@ -21,7 +21,6 @@ class UserController extends Controller
     public function index()
     {
         $response = [];
-        $statusCode = 200;
         $users = User::all();
 
         foreach ($users as $user) {
@@ -34,13 +33,12 @@ class UserController extends Controller
                 'bookscount' => $user->books->count()
             ];
         }
-        return Response::json($response, $statusCode);
+        return Response::json($response, 200);
     }
 
     public function userBooks($id)
     {
         //Предоставление списка книг, которые взял определенный пользователь
-        $statusCode = 200;
         $user = User::findOrFail($id);
         $books = $user->books()->get();
         $response = [];
@@ -53,17 +51,16 @@ class UserController extends Controller
                 'year' => $book->year
             ];
         }
-        return Response::json($response, $statusCode);
+        return Response::json($response, 200);
     }
 
 
     public function giveBook($id)
     {
         $response['user'] = User::findOrFail($id);
-        $response['books'] = Book::where('user_id', '=' , 0)->get();
+        $response['books'] = Book::where('user_id', '=', 0)->get();
 
-        $statusCode = 200;
-        return Response::json($response, $statusCode);
+        return Response::json($response, 200);
     }
 
     public function show($id)
@@ -79,64 +76,26 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         $user->delete();
-        $statusCode = 200;
         $response = ['status' => 'success'];
-        return Response::json($response, $statusCode);
+        return Response::json($response, 200);
     }
 
-    public function update(Request $request, $id){
+    public function update($id, Requests\UpdateUserRequest $request)
+    {
 
-        $rules = array(
-            'firstname'=> array('required', 'min:3', 'regex:/^[a-zA-Z]+$/'),
-            'lastname' => array('required','min:3','Regex:/^[a-zA-Z]+$/'),
-            'email' => 'required|email|unique:users,id,'.$id
-        );
-//                'required|regex:[A-Za-z]',
-        $validator = Validator::make($request->all(), $rules);
-        if($validator->fails()) {
-            return Response::json('', 400);
-        } else {
+        $user = User::findOrFail($id);
+        $user->update($request->all());
+        $user->save();
 
-            $user = User::find($id);
-            $user->firstname = $request->firstname;
-            $user->lastname = $request->lastname;
-            $user->email = $request->email;
-            //$user->save();
-            $user->update($request->all());
-            $user->save();
-            $user = User::find($id);
-
-            return Response::json($request->all(), 200);
-        }
+        return Response::json($user, 200);
     }
 
     public function store(Request $request)
     {
-        $rules = array(
-            'firstname'=> array('required', 'min:3', 'regex:/^[a-zA-Z]+$/'),
-            'lastname' => array('required','min:3','Regex:/^[a-zA-Z]+$/'),
-            'email' => 'required|email|unique:users'
-        );
-//                'required|regex:[A-Za-z]',
-        $validator = Validator::make($request->all(), $rules);
-        if($validator->fails()) {
-            return Response::json('', 400);
-        } else {
 
-            $user = new User($request->all());
-            //$user->password = bcrypt($request->password);
-            //$user->firstname = $request->firstname;
-            //$user->lastname = $request->lastname;
-            //$user->email = $request->email;
-            $user->save();
-//            $user = User::create([
-//                'firstname' => $request->firstname,
-//                'lastname' => $request->lastname,
-//                'email' => $request->email
-//            ]);
-
-            return Response::json($user, 200);
-        }
+        $user = User::create($request->all());
+        
+        return Response::json($user, 200);
     }
 
 }

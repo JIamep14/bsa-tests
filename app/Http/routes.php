@@ -12,9 +12,8 @@
 */
 Route::group(array('prefix' => 'api'), function()
 {
-    Route::post('book/{id}/return/{uid}', 'BookController@returnBook');
-    Route::get('user/{id}/free', 'UserController@giveBook');
-    Route::get('user/{id}/books', 'UserController@userBooks');
+    Route::get('user/{id}/free', ['as' => 'free', 'uses' => 'UserController@giveBook']);
+    Route::get('user/{id}/books', ['as' => 'user-books', 'uses' => 'UserController@userBooks']);
     Route::resource('user', 'UserController');
     Route::resource('book', 'BookController');
 
